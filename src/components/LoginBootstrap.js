@@ -1,6 +1,6 @@
 import {
   getAuth,
-  sendEmailVerification,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import React, { useState } from "react";
@@ -11,6 +11,7 @@ const auth = getAuth(app);
 
 const LoginBootstrap = () => {
   const [success, setSuccess] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -29,6 +30,23 @@ const LoginBootstrap = () => {
       });
   };
 
+  const handleEmailBlur = (event) => {
+    const email = event.target.value;
+    setUserEmail(email);
+  };
+
+  const handleForgetPassword = () => {
+    if (!userEmail) {
+      alert("Please type your email to reset password");
+      return;
+    }
+    sendPasswordResetEmail(auth, userEmail)
+      .then(() => {
+        alert("Password reset email sent");
+      })
+      .catch((error) => console.log(error));
+  };
+
   return (
     <div className="w-50 mx-auto">
       <h3 className="text-success">Please login</h3>
@@ -40,6 +58,7 @@ const LoginBootstrap = () => {
           <input
             type="email"
             name="email"
+            onBlur={handleEmailBlur}
             className="form-control"
             id="formGroupExampleInput"
             placeholder="Your Email"
@@ -69,6 +88,19 @@ const LoginBootstrap = () => {
       <p>
         <small>
           New to this website? Please <Link to="/register">Register</Link>
+        </small>
+      </p>
+      <p>
+        <small>
+          {" "}
+          Forget Password?{" "}
+          <button
+            type="button"
+            onClick={handleForgetPassword}
+            class="btn btn-link"
+          >
+            Reset Password
+          </button>
         </small>
       </p>
     </div>
