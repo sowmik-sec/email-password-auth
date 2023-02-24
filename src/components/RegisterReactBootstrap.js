@@ -2,6 +2,7 @@ import {
   createUserWithEmailAndPassword,
   getAuth,
   sendEmailVerification,
+  updateProfile,
 } from "firebase/auth";
 import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
@@ -23,6 +24,7 @@ const RegisterReactBootstrap = () => {
     event.preventDefault();
     setSuccess(false);
     const form = event.target;
+    const name = form.name.value;
     const email = form.email.value;
     const password = form.password.value;
     console.log(email, password);
@@ -46,16 +48,39 @@ const RegisterReactBootstrap = () => {
         setSuccess(true);
         form.reset();
         verifyEmail();
+        updateUserName(name);
       })
       .catch((error) => {
         console.error(error);
         setPasswordError(error.message);
       });
   };
+
+  const updateUserName = (name) => {
+    updateProfile(auth.currentUser, {
+      displayName: name,
+    })
+      .then(() => {
+        console.log("display name updated");
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   return (
     <div className="w-50 mx-auto">
       <h3 className="text-primary">Please Register</h3>
       <Form onSubmit={handleRegister}>
+        <Form.Group className="mb-3" controlId="formBasicName">
+          <Form.Label>Your Name</Form.Label>
+          <Form.Control
+            type="text"
+            name="name"
+            placeholder="Enter name"
+            required
+          />
+        </Form.Group>
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
           <Form.Control
